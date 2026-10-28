@@ -1,0 +1,230 @@
+mysql> create table personal_data(username varchar(10), emailid varchar(25) unique, UG_University varchar(25));
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> desc personal_data;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| username      | varchar(10) | YES  |     | NULL    |       |
+| emailid       | varchar(25) | YES  | UNI | NULL    |       |
+| UG_University | varchar(25) | YES  |     | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+3 rows in set (0.02 sec)
+
+mysql> insert into personal_data values('sumathi', 'sumathi15@gmail.com', 'bharathiyar'), ('ravi', 'ravi23@gmail.com', 'bharathidasan'), ('keerthi', 'keerthi030@gmail.com', 'bharathiar');
+Query OK, 3 rows affected (0.02 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> insert into personal_data values('sumathi', 'suma2104@gmail.com', 'periyar');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into personal_data values('kumar', 'kumar101@gmail.com', 'bharathiar');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select * from personal_data;
++----------+----------------------+---------------+
+| username | emailid              | UG_University |
++----------+----------------------+---------------+
+| sumathi  | sumathi15@gmail.com  | bharathiyar   |
+| ravi     | ravi23@gmail.com     | bharathidasan |
+| keerthi  | keerthi030@gmail.com | bharathiar    |
+| sumathi  | suma2104@gmail.com   | periyar       |
+| kumar    | kumar101@gmail.com   | bharathiar    |
++----------+----------------------+---------------+
+5 rows in set (0.00 sec)
+
+Pattern Matching Using LIKE Operator
+mysql> SELECT * FROM personal_data WHERE emailid LIKE '%@gmail.com%';
++----------+----------------------+---------------+
+| username | emailid              | UG_University |
++----------+----------------------+---------------+
+| sumathi  | sumathi15@gmail.com  | bharathiyar   |
+| ravi     | ravi23@gmail.com     | bharathidasan |
+| keerthi  | keerthi030@gmail.com | bharathiar    |
+| sumathi  | suma2104@gmail.com   | periyar       |
+| kumar    | kumar101@gmail.com   | bharathiar    |
++----------+----------------------+---------------+
+5 rows in set (0.01 sec)
+
+mysql> SELECT * FROM personal_data WHERE username LIKE '_a%';
++----------+------------------+---------------+
+| username | emailid          | UG_University |
++----------+------------------+---------------+
+| ravi     | ravi23@gmail.com | bharathidasan |
++----------+------------------+---------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM personal_data WHERE username LIKE '%a_';
++----------+--------------------+---------------+
+| username | emailid            | UG_University |
++----------+--------------------+---------------+
+| kumar    | kumar101@gmail.com | bharathiar    |
++----------+--------------------+---------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT * FROM personal_data WHERE UG_University LIKE '%ar';
++----------+----------------------+---------------+
+| username | emailid              | UG_University |
++----------+----------------------+---------------+
+| sumathi  | sumathi15@gmail.com  | bharathiyar   |
+| keerthi  | keerthi030@gmail.com | bharathiar    |
+| sumathi  | suma2104@gmail.com   | periyar       |
+| kumar    | kumar101@gmail.com   | bharathiar    |
++----------+----------------------+---------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM personal_data WHERE UG_University NOT LIKE '_h%';
++----------+--------------------+---------------+
+| username | emailid            | UG_University |
++----------+--------------------+---------------+
+| sumathi  | suma2104@gmail.com | periyar       |
++----------+--------------------+---------------+
+1 row in set (0.01 sec)
+GROUP BY & Aggregate Functions in USER Table
+mysql> select * from user;
++--------+----------+-------+----------+
+| Iduser | username | place | invested |
++--------+----------+-------+----------+
+|   1001 | anu      | cbe   |     NULL |
+|   1002 | priya    | ooty  |    10000 |
+|   1003 | monika   | cbe   |    10000 |
+|   1005 | kiru     | ooty  |    10000 |
++--------+----------+-------+----------+
+4 rows in set (0.00 sec)
+
+mysql> select count(*) from user;
++----------+
+| count(*) |
++----------+
+|        4 |
++----------+
+1 row in set (0.02 sec)
+
+mysql> select sum(invested) from user;
++---------------+
+| sum(invested) |
++---------------+
+|         30000 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> select avg(invested) from user;
++---------------+
+| avg(invested) |
++---------------+
+|    10000.0000 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> update user set invested=5000 where Iduser = 1003;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from user;
++--------+----------+-------+----------+
+| Iduser | username | place | invested |
++--------+----------+-------+----------+
+|   1001 | anu      | cbe   |     NULL |
+|   1002 | priya    | ooty  |    10000 |
+|   1003 | monika   | cbe   |     5000 |
+|   1005 | kiru     | ooty  |    15000 |
++--------+----------+-------+----------+
+4 rows in set (0.02 sec)
+
+mysql> select place, avg(invested) from user group by place;
++-------+---------------+
+| place | avg(invested) |
++-------+---------------+
+| cbe   |     5000.0000 |
+| ooty  |    12500.0000 |
++-------+---------------+
+2 rows in set (0.02 sec)
+
+mysql> select place, min(invested) from user group by place;
++-------+---------------+
+| place | min(invested) |
++-------+---------------+
+| cbe   |          5000 |
+| ooty  |         10000 |
++-------+---------------+
+2 rows in set (0.01 sec)
+
+mysql> select place, sum(invested) from user group by place;
++-------+---------------+
+| place | sum(invested) |
++-------+---------------+
+| cbe   |          5000 |
+| ooty  |         25000 |
++-------+---------------+
+2 rows in set (0.00 sec)
+
+ORDER BY & LIMIT Clauses
+mysql> select * from personalinfo order by studentname asc;
++---------+-------------+------------+------------+--------------------+---------------------+
+| rollno  | studentname | fathername | occupation | email              | created_at          |
++---------+-------------+------------+------------+--------------------+---------------------+
+| 25MCA04 | Abi         | Arunachalam| Manager    | abi01@gmail.com    | 2025-09-02 14:47:13 |
+| 25MCA01 | Anu         | Murugan    | Manager    | anupriya@gmail.com | 2025-09-02 14:17:57 |
+| 25MCA02 | Banupriya   | Balaji     | Salesman   | banu@gmail.com     | 2025-09-02 14:19:55 |
+| 25MCA06 | Mani        | Senthil    | Teacher    | mani007@gmail.com  | 2025-09-02 14:55:33 |
+| 25MCA03 | Prakash     | Kumar      | Clerk      | prakash21@gmail.com| 2025-09-02 14:21:00 |
++---------+-------------+------------+------------+---------------------+---------------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from personalinfo order by studentname asc limit 1;
++---------+-------------+------------+------------+--------------------+---------------------+
+| rollno  | studentname | fathername | occupation | email              | created_at          |
++---------+-------------+------------+------------+--------------------+---------------------+
+| 25MCA04 | Abi         | Arunachalam| Manager    | abi01@gmail.com    | 2025-09-02 14:47:13 |
++---------+-------------+------------+------------+--------------------+---------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from personalinfo order by studentname desc limit 1;
++---------+-------------+------------+------------+--------------------+---------------------+
+| rollno  | studentname | fathername | occupation | email              | created_at          |
++---------+-------------+------------+------------+--------------------+---------------------+
+| 25MCA03 | Prakash     | Kumar      | Clerk      | prakash21@gmail.com| 2025-09-02 14:21:00 |
++---------+-------------+------------+------------+--------------------+---------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from emp;
++-----+--------+-----+-----+
+| eid | ename  | age | edu |
++-----+--------+-----+-----+
+|   1 | sindhu |  25 | mca |
+|   2 | kavi   |  26 | mca |
++-----+--------+-----+-----+
+2 rows in set (0.02 sec)
+
+mysql> insert into emp values (3, 'rithu', 25, 'mca'), (4, 'raju', 26, 'mca'), (5, 'ganesh', 25, 'mca'), (6, 'priya', 26, 'mca');
+Query OK, 4 rows affected (0.02 sec)
+
+mysql> select * from emp;
++-----+--------+-----+-----+
+| eid | ename  | age | edu |
++-----+--------+-----+-----+
+|   1 | sindhu |  25 | mca |
+|   2 | kavi   |  26 | mca |
+|   3 | rithu  |  25 | mca |
+|   4 | raju   |  26 | mca |
+|   5 | ganesh |  25 | mca |
+|   6 | priya  |  26 | mca |
++-----+--------+-----+-----+
+6 rows in set (0.00 sec)
+HAVING Clause Filter in EMP Table
+mysql> select edu, count(eid) as num_employees from emp group by edu having count(eid) > 3;
++-----+---------------+
+| edu | num_employees |
++-----+---------------+
+| mca |             6 |
++-----+---------------+
+1 row in set (0.02 sec)
+
+mysql> select age, count(eid) as num_employees from emp group by age having count(eid) >= 3;
++-----+---------------+
+| age | num_employees |
++-----+---------------+
+|  25 |             3 |
+|  26 |             3 |
++-----+---------------+
+2 rows in set (0.00 sec)

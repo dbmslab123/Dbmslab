@@ -1,0 +1,171 @@
+Step 1: Setup s_mark Collection in e_shopping Database
+e_shopping> db.s_mark.insertOne({ _id: 1, sname: "Arun", java: 76, cn: 73, os: 98 });
+{ acknowledged: true, insertedId: 1 }
+
+e_shopping> db.s_mark.insertMany([
+  { _id: 2, sname: "banu", java: 67, cn: 56, os: 76 },
+  { _id: 3, sname: "chitra", java: 89, cn: 67, os: 54 },
+  { _id: 4, sname: "dharshan", java: 73, cn: 45, os: 69 }
+]);
+
+
+Step 2: Aggregate Function - $sum
+e_shopping> db.s_mark.aggregate([
+  {
+    $addFields: {
+      totalmark: { $sum: ["$java", "$cn", "$os"] }
+    }
+  }
+])
+
+// Result of $sum:
+[
+  { _id: 1, sname: 'Arun', java: 76, cn: 73, os: 98, totalmark: 247 },
+  { _id: 2, sname: 'banu', java: 67, cn: 56, os: 76, totalmark: 199 }
+]
+
+Step 3: Multi-Operator Aggregation ($add, $multiply, $divide)
+e_shopping> db.s_mark.aggregate([
+  {
+    $addFields: {
+      totalmark: { $add: ["$java", "$cn", "$os"] },
+      percentage: {
+        $multiply: [
+          { $divide: [{ $add: ["$java", "$cn", "$os"] }, 300] },
+          100
+        ]
+      }
+    }
+  }
+])
+
+// Result Output:
+[
+  {
+    _id: 1,
+    sname: 'Arun',
+    java: 76,
+    cn: 73,
+    os: 98,
+    totalmark: 247,
+    percentage: 82.33333333333334
+  },
+  {
+    _id: 2,
+    sname: 'banu',
+    java: 67,
+    cn: 56,
+    os: 76,
+    totalmark: 199,
+    percentage: 66.33333333333333
+  }
+]
+
+
+Step 4 & 5: Field Update & Verification
+e_shopping> db.s_mark.updateOne({_id: 1}, { $set: { "edu_status": "regular" } })
+e_shopping> db.s_mark.updateOne({_id: 2}, { $set: { "edu_status": "intern" } })
+e_shopping> db.s_mark.updateOne({_id: 3}, { $set: { "edu_status": "regular" } })
+e_shopping> db.s_mark.updateOne({_id: 4}, { $set: { "edu_status": "intern" } })
+
+e_shopping> db.s_mark.find()
+[
+  { _id: 1, sname: 'Arun', java: 76, cn: 73, os: 98, edu_status: 'regular' },
+  { _id: 2, sname: 'banu', java: 67, cn: 56, os: 76, edu_status: 'intern' },
+  { _id: 3, sname: 'chitra', java: 89, cn: 67, os: 54, edu_status: 'regular' },
+  { _id: 4, sname: 'dharshan', java: 73, cn: 45, os: 69, edu_status: 'intern' }
+]
+
+
+Step 6: Aggregate Stage - $match
+e_shopping> db.s_mark.aggregate([{ $match: { edu_status: "regular" } }])
+[
+  { _id: 1, sname: 'Arun', java: 76, cn: 73, os: 98, edu_status: 'regular' },
+  { _id: 3, sname: 'chitra', java: 89, cn: 67, os: 54, edu_status: 'regular' }
+]
+Step 7: $match with Multiple Conditions
+e_shopping> db.s_mark.aggregate([
+  { $match: { edu_status: "intern", os: { $gte: 70 } } }
+])
+[
+  { _id: 2, sname: 'banu', java: 67, cn: 56, os: 76, edu_status: 'intern' }
+]
+
+
+Step 8: Comparison with Standard find() Filter
+e_shopping> db.s_mark.find({ edu_status: "intern" })
+[
+  { _id: 2, sname: 'banu', java: 67, cn: 56, os: 76, edu_status: 'intern' },
+  { _id: 4, sname: 'dharshan', java: 73, cn: 45, os: 69, edu_status: 'intern' }
+]
+
+
+Step 9: Aggregate Stage - $group
+e_shopping> db.s_mark.aggregate([
+  {
+    $group: {
+      _id: "$edu_status",
+      avg_java: { $avg: "$java" },
+      avg_cn: { $avg: "$cn" },
+      avg_os: { $avg: "$os" },
+      count: { $sum: 1 }
+    }
+  }
+])
+
+
+Result of $group Stage
+[
+  { _id: 'intern', avg_java: 70, avg_cn: 50.5, avg_os: 72.5, count: 2 },
+  { _id: 'regular', avg_java: 82.5, avg_cn: 70, avg_os: 76, count: 2 }
+]
+
+
+Step 10: $count Pipeline Stage
+e_shopping> db.s_mark.aggregate([
+  { $match: { "edu_status": "regular" } },
+  { $count: "totalregularstudents" }
+])
+[ { totalregularstudents: 2 } ]
+
+e_shopping> db.s_mark.aggregate([
+  { $match: { "edu_status": "intern" } },
+  { $count: "Total_Intern_Students" }
+])
+[ { Total_Intern_Students: 2 } ]
+
+
+
+Document Counting Helper Methods
+e_shopping> db.s_mark.estimatedDocumentCount()
+4
+
+e_shopping> db.s_mark.countDocuments({})
+4
+
+e_shopping> db.s_mark.countDocuments({ edu_status: "intern" })
+2
+
+
+Step 11: Field Projection & Limits Using $project and $limit
+e_shopping> db.products.aggregate([
+  {
+    $project: {
+      "_id": 0,
+      "name": 1,
+      "category": 1,
+      "stock": 1
+    }
+  },
+  { $limit: 2 }
+])
+[
+  { name: 'Laptop', category: 'Electronics', stock: 50 },
+  { name: 'Mouse', category: 'Electronics', stock: 200 }
+]
+
+
+
+
+
+

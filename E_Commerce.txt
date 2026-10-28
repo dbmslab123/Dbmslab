@@ -1,0 +1,67 @@
+Step 1: Open Mongosh / Compass Terminal Shell
+MongoDB Compass - mycollections / Shell
+
+
+test> show databases;
+admin                    40.00 KiB
+config                  188.00 KiB
+local                    72.00 KiB
+mongodbVSCodePlayground  40.00 KiB
+
+Step 2: Switch to Newly Created Database
+test> use e_commerce
+switched to db e_commerce
+
+e_commerce>
+
+Step 3: Insert Documents into products Collection
+e_commerce> db.products.insertMany([
+  { name: "Laptop", category: "Electronics", price: 1200, stock: 50 },
+  { name: "Mouse", category: "Electronics", price: 25, stock: 200 },
+  { name: "Keyboard", category: "Electronics", price: 75, stock: 150 },
+  { name: "Desk Chair", category: "Furniture", price: 300, stock: 30 },
+  { name: "Coffee Table", category: "Furniture", price: 150, stock: 40 },
+  { name: "Bookcase", category: "Furniture", price: 200, stock: 20 },
+  { name: "T-Shirt", category: "Apparel", price: 20, stock: 500 },
+  { name: "Jeans", category: "Apparel", price: 60, stock: 100 }
+]);
+
+Step 4: View Data in MongoDB Compass Table View
+#	_id (ObjectId)	name (String)	category (String)	price (Int32)
+1	68f9afa582de359b62abe9ef	Laptop	Electronics	1200
+2	68f9afa582de359b62abe9f0	Mouse	Electronics	25
+3	68f9afa582de359b62abe9f1	Keyboard	Electronics	75
+4	68f9afa582de359b62abe9f2	Desk Chair	Furniture	300
+5	68f9afa582de359b62abe9f3	Coffee Table	Furniture	150
+6	68f9afa582de359b62abe9f4	Bookcase	Furniture	200
+7	68f9afa582de359b62abe9f5	T-Shirt	Apparel	20
+8	68f9afa582de359b62abe9f6	Jeans	Apparel	60
+
+
+Step 5: View Inserted Data in Mongosh Terminal
+e_commerce> db.products.find()
+[
+  {
+    _id: ObjectId('68f9afa582de359b62abe9ef'),
+    name: 'Laptop',
+    category: 'Electronics',
+    price: 1200,
+    stock: 50
+  },
+  {
+    _id: ObjectId('68f9afa582de359b62abe9f0'),
+    name: 'Mouse',
+    category: 'Electronics',
+    price: 25,
+    stock: 200
+  },
+  {
+    _id: ObjectId('68f9afa582de359b62abe9f1'),
+    name: 'Keyboard',
+    category: 'Electronics',
+    price: 75,
+    stock: 150
+  }
+]
+
+

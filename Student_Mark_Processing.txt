@@ -1,0 +1,99 @@
+mysql> create table studentdata(
+    rollno varchar(8) primary key, 
+    studentname varchar(15), 
+    java int, adbms int, cn int, os int, d_net int, 
+    total int, percentage int
+);
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> desc studentdata;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| rollno      | varchar(8)  | NO   | PRI | NULL    |       |
+| studentname | varchar(15) | YES  |     | NULL    |       |
+| java        | int         | YES  |     | NULL    |       |
+| adbms       | int         | YES  |     | NULL    |       |
+| cn          | int         | YES  |     | NULL    |       |
+| os          | int         | YES  |     | NULL    |       |
+| d_net       | int         | YES  |     | NULL    |       |
+| total       | int         | YES  |     | NULL    |       |
+| percentage  | int         | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+9 rows in set (0.01 sec)
+
+mysql> insert into studentdata (rollno, studentname, java, adbms, cn, os, d_net) values ('25mca01', 'arun', 50, 57, 67, 78, 50);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into studentdata (rollno, studentname, java, adbms, cn, os, d_net) values ('25mca02', 'banu', 65, 57, 69, 60, 48), ('25mca03', 'chitra', 78, 67, 56, 46, 98);
+Query OK, 2 rows affected (0.02 sec)
+
+mysql> update studentdata set total = java + adbms + cn + os + d_net;
+Query OK, 3 rows affected (0.02 sec)
+
+mysql> update studentdata set percentage = total / 5;
+Query OK, 3 rows affected (0.02 sec)
+
+mysql> select * from studentdata;
++---------+-------------+------+-------+----+----+-------+-------+------------+
+| rollno  | studentname | java | adbms | cn | os | d_net | total | percentage |
++---------+-------------+------+-------+----+----+-------+-------+------------+
+| 25mca01 | arun        |   50 |    57 | 67 | 78 |    50 |   302 |         60 |
+| 25mca02 | banu        |   65 |    57 | 69 | 60 |    48 |   299 |         60 |
+| 25mca03 | chitra      |   78 |    67 | 56 | 46 |    98 |   345 |         69 |
++---------+-------------+------+-------+----+----+-------+-------+------------+
+3 rows in set (0.00 sec)
+
+Logical Operators & WHERE Clause Filtering
+mysql> select rollno, java from studentdata where java between 45 and 65;
++---------+------+
+| rollno  | java |
++---------+------+
+| 25mca01 |   50 |
+| 25mca02 |   65 |
++---------+------+
+2 rows in set (0.00 sec)
+
+mysql> select rollno, java, d_net from studentdata where java > 45 and d_net > 45;
++---------+------+-------+
+| rollno  | java | d_net |
++---------+------+-------+
+| 25mca01 |   50 |    50 |
+| 25mca02 |   65 |    48 |
+| 25mca03 |   78 |    98 |
++---------+------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select rollno, cn, os from studentdata where cn >= 60 or os >= 60;
++---------+----+----+
+| rollno  | cn | os |
++---------+----+----+
+| 25mca01 | 67 | 78 |
+| 25mca02 | 69 | 60 |
++---------+----+----+
+2 rows in set (0.00 sec)
+
+mysql> select rollno, studentname from studentdata where total not between 300 and 350;
++---------+-------------+
+| rollno  | studentname |
++---------+-------------+
+| 25mca02 | banu        |
++---------+-------------+
+1 row in set (0.00 sec)
+
+mysql> select rollno, studentname from studentdata where total <> 302;
++---------+-------------+
+| rollno  | studentname |
++---------+-------------+
+| 25mca02 | banu        |
+| 25mca03 | chitra      |
++---------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> select rollno, studentname, total from studentdata where total = 299;
++---------+-------------+-------+
+| rollno  | studentname | total |
++---------+-------------+-------+
+| 25mca02 | banu        |   299 |
++---------+-------------+-------+
+1 row in set (0.00 sec)

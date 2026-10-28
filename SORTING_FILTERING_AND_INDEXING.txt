@@ -1,0 +1,44 @@
+Step 1 & 2: Dataset Insertion & Multi-Field Filtering
+e_shopping> db.product.find({ category: "Electronics", price: { $lt: 100 } })
+[
+  { _id: ObjectId('68f8983adabcf8634ae16e10'), name: 'Mouse', category: 'Electronics', price: 25, stock: 200 },
+  { _id: ObjectId('68f8983adabcf8634ae16e11'), name: 'Keyboard', category: 'Electronics', price: 75, stock: 150 }
+]
+
+
+
+Step 3 & 4: Sorting (Ascending & Descending)
+// Ascending sort by price
+e_shopping> db.product.find().sort({ price: 1 })
+
+// Descending sort by stock within Furniture category
+e_shopping> db.product.find({ category: "Furniture" }).sort({ stock: -1 })
+
+
+Step 5: Filter and Sort Combination
+e_shopping> db.product.find({ category: "Electronics", price: { $gt: 50 } }).sort({ name: 1 })
+[
+  { _id: ObjectId('68f8983adabcf8634ae16e11'), name: 'Keyboard', category: 'Electronics', price: 75, stock: 150 },
+  { _id: ObjectId('68f8983adabcf8634ae16e0f'), name: 'Laptop', category: 'Electronics', price: 1200, stock: 50 }
+]
+
+
+
+Step 6 & 7: Index Inspection & Compound Index Creation
+// Check indexes before creation
+e_shopping> db.product.getIndexes()
+[ { v: 2, key: { _id: 1 }, name: '_id_' } ]
+
+// Create Compound Index on category (asc) and price (asc)
+e_shopping> db.product.createIndex({ category: 1, price: 1 })
+category_1_price_1
+
+// Verify updated indexes
+e_shopping> db.product.getIndexes()
+[
+  { v: 2, key: { _id: 1 }, name: '_id_' },
+  { v: 2, key: { category: 1, price: 1 }, name: 'category_1_price_1' }
+]
+
+
+

@@ -1,0 +1,86 @@
+Task d: Find All Users Older Than 12 Years
+e_shopping> db.student.find({ age: { $gt: 12 } })
+[
+  {
+    _id: 1,
+    firstname: 'adhi',
+    lastname: 'ravi',
+    age: 16,
+    email: 'adhiravi@gmail.com'
+  },
+  {
+    _id: 3,
+    firstname: 'balu',
+    lastname: 'velu',
+    age: 15,
+    email: 'baluv@gmail.com'
+  }
+]
+
+
+Task c: Group & Find Users Sharing the Same Firstname
+e_shopping> db.student.aggregate([
+  {
+    $group: {
+      _id: "$firstname",
+      count: { $sum: 1 },
+      users: { $push: "$$ROOT" }
+    }
+  },
+  {
+    $match: {
+      count: { $gt: 1 }
+    }
+  }
+])
+
+// Result Output:
+[
+  {
+    _id: 'adhi',
+    count: 2,
+    users: [
+      { _id: 1, firstname: 'adhi', lastname: 'ravi', age: 16, email: 'adhiravi@gmail.com' },
+      { _id: 2, firstname: 'adhi', lastname: 'mani', age: 12, email: 'dhivya@gmail.com' }
+    ]
+  }
+]
+
+
+Task b: Find User by Email Pattern (Regex)
+e_shopping> db.student.findOne(
+  { email: { $regex: "@gmail\\.com$", $options: "i" } }
+);
+{
+  _id: 1,
+  firstname: 'adhi',
+  lastname: 'ravi',
+  age: 16,
+  email: 'adhiravi@gmail.com'
+}
+
+e_shopping> db.product.findOne(
+  { email: { $regex: "@kgisliim\\.ac\\.in$", $options: "i" } }
+);
+{
+  _id: 2,
+  username: 'Shruthi',
+  age: 19,
+  email: 'shruthi@kgisliim.ac.in'
+}
+
+
+Task a: Find Document by Exact ID
+e_shopping> db.student.findOne({ _id: 2 });
+{
+  _id: 2,
+  firstname: 'adhi',
+  lastname: 'mani',
+  age: 12,
+  email: 'dhivya@gmail.com'
+}
+
+
+
+
+

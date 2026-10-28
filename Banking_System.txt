@@ -1,0 +1,97 @@
+mysql> create table bank(accno int primary key, cust_name varchar(15), email varchar(100) unique, phonenumber varchar(15) unique);
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> desc bank;
++-------------+--------------+------+-----+---------+-------+
+| Field       | Type         | Null | Key | Default | Extra |
++-------------+--------------+------+-----+---------+-------+
+| accno       | int          | NO   | PRI | NULL    |       |
+| cust_name   | varchar(15)  | YES  |     | NULL    |       |
+| email       | varchar(100) | YES  | UNI | NULL    |       |
+| phonenumber | varchar(15)  | YES  | UNI | NULL    |       |
++-------------+--------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> insert into bank values (17071, 'velan', 'velan01@gmail.com', '9788934500');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into bank values (17072, 'anu', 'anupriya@gmail.com', '6734517000'), (17073, 'shanthi', 'sanu21@gmail.com', '7890012345');
+Query OK, 2 rows affected (0.02 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from bank;
++-------+-----------+--------------------+-------------+
+| accno | cust_name | email              | phonenumber |
++-------+-----------+--------------------+-------------+
+| 17071 | velan     | velan01@gmail.com  | 9788934500  |
+| 17072 | anu       | anupriya@gmail.com | 6734517000  |
+| 17073 | shanthi   | sanu21@gmail.com   | 7890012345  |
++-------+-----------+--------------------+-------------+
+3 rows in set (0.00 sec)
+Unique Key Constraint Violation
+mysql> insert into bank values (17074, 'arun', 'anupriya@gmail.com', '6734517000');
+ERROR 1062 (23000): Duplicate entry 'anupriya@gmail.com' for key 'bank.email'
+Inserting NULL Value in Unique Key Field
+mysql> insert into bank values (17074, 'arun', NULL, '9894238341');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into bank values (17075, 'padma', 'padma@gmail.com', null);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into bank values (17076, 'preethi', null, null);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> select * from bank;
++-------+-----------+--------------------+-------------+
+| accno | cust_name | email              | phonenumber |
++-------+-----------+--------------------+-------------+
+| 17071 | velan     | velan01@gmail.com  | 9788934500  |
+| 17072 | anu       | anupriya@gmail.com | 6734517000  |
+| 17073 | shanthi   | sanu21@gmail.com   | 7890012345  |
+| 17074 | arun      | NULL               | 9894238341  |
+| 17075 | padma     | padma@gmail.com    | NULL        |
+| 17076 | preethi   | NULL               | NULL        |
++-------+-----------+--------------------+-------------+
+6 rows in set (0.00 sec)
+DBMS Practical Record
+Page 4
+Foreign Key Creation & Relations
+mysql> create table loandetails (loanid int primary key, accno int, loanamt int, foreign key (accno) references bank(accno));
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> desc loandetails;
++---------+------+------+-----+---------+-------+
+| Field   | Type | Null | Key | Default | Extra |
++---------+------+------+-----+---------+-------+
+| loanid  | int  | NO   | PRI | NULL    |       |
+| accno   | int  | YES  | MUL | NULL    |       |
+| loanamt | int  | YES  |     | NULL    |       |
++---------+------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> insert into loandetails values(101, 17071, 50000);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into loandetails values(102, 17074, 60000);
+Query OK, 1 row affected (0.02 sec)
+Foreign Key Constraint Violation
+mysql> insert into loandetails values (103, 17677, 45000);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`db1`.`loandetails`, CONSTRAINT `loandetails_ibfk_1` FOREIGN KEY (`accno`) REFERENCES `bank` (`accno`))
+
+mysql> select * from loandetails;
++--------+-------+---------+
+| loanid | accno | loanamt |
++--------+-------+---------+
+|    101 | 17071 |   50000 |
+|    102 | 17074 |   60000 |
++--------+-------+---------+
+2 rows in set (0.00 sec)
+Combining Two Table Data Using Inner Join
+mysql> select b.cust_name, l.loanid, l.loanamt from bank b inner join loandetails l on b.accno = l.accno;
++-----------+--------+---------+
+| cust_name | loanid | loanamt |
++-----------+--------+---------+
+| velan     |    101 |   50000 |
+| arun      |    102 |   60000 |
++-----------+--------+---------+
+2 rows in set (0.00 sec)

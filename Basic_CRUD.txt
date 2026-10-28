@@ -1,0 +1,184 @@
+Step 1: Create Collection collegeshop in Database e_shopping
+> use e_shopping
+switched to db e_shopping
+
+e_shopping> db.createCollection("collegeshop")
+{ ok: 1 }
+
+
+Step 2: Insert Documents Into Collection
+e_shopping> db.collegeshop.insertOne({ item: "notebook", qty: 50 })
+{
+  acknowledged: true,
+  insertedId: ObjectId('68e72b45771f57bccf5daf3b')
+}
+
+e_shopping> db.collegeshop.insertMany([
+  { item: "ballpointpen", qty: 100 },
+  { item: "inkpen", qty: 60 }
+])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('68e72b8e771f57bccf5daf3c'),
+    '1': ObjectId('68e72b8e771f57bccf5daf3d')
+  }
+}
+
+
+Step 3: Read Documents Using find()
+e_shopping> db.collegeshop.find({ qty: { $gt: 15 } })
+[
+  { _id: ObjectId('68e72b45771f57bccf5daf3b'), item: 'notebook', qty: 50 },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3c'), item: 'ballpointpen', qty: 100 },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3d'), item: 'inkpen', qty: 60 }
+]
+
+Read Document Using findOne()
+e_shopping> db.collegeshop.findOne({ item: "ballpointpen" })
+{
+  _id: ObjectId('68e72b8e771f57bccf5daf3c'),
+  item: 'ballpointpen',
+  qty: 100
+}
+
+
+Step 4: Query with Comparison Operators ($gt, $lt, $gte, $lte)
+// Find items with quantity between 30 and 100 (exclusive)
+e_shopping> db.collegeshop.find({ qty: { $gt: 30, $lt: 100 } })
+[
+  { _id: ObjectId('68e72b45771f57bccf5daf3b'), item: 'notebook', qty: 50 },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3d'), item: 'inkpen', qty: 60 }
+]
+
+// Find items with quantity between 60 and 100 (inclusive)
+e_shopping> db.collegeshop.find({ qty: { $gte: 60, $lte: 100 } })
+[
+  { _id: ObjectId('68e72b8e771f57bccf5daf3c'), item: 'ballpointpen', qty: 100 },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3d'), item: 'inkpen', qty: 60 }
+]
+
+
+Step 5: Update Single Document Using updateOne()
+e_shopping> db.collegeshop.updateOne(
+  { item: "notebook" },
+  { $set: { "category": "paperstuff" } }
+)
+
+e_shopping> db.collegeshop.find();
+[
+  {
+    _id: ObjectId('68e72b45771f57bccf5daf3b'),
+    item: 'notebook',
+    qty: 50,
+    category: 'paperstuff'
+  },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3c'), item: 'ballpointpen', qty: 100 },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3d'), item: 'inkpen', qty: 60 }
+]
+Updating Additional Documents One By One
+e_shopping> db.collegeshop.updateOne(
+  { item: "ballpointpen" },
+  { $set: { "category": "writingstuff" } }
+)
+
+e_shopping> db.collegeshop.updateOne(
+  { item: "inkpen" },
+  { $set: { "category": "writingstuff" } }
+)
+
+
+Step 6: Update Multiple Documents Using updateMany()
+e_shopping> db.collegeshop.updatemany({category: "writingstuff"}, {$set: {satus:"available"}})
+TypeError: db.collegeshop.updatemany is not a function
+
+// Case sensitive correction to updateMany()
+e_shopping> db.collegeshop.find();
+[
+  {
+    _id: ObjectId('68e72b45771f57bccf5daf3b'),
+    item: 'notebook',
+    qty: 50,
+    category: 'paperstuff'
+  },
+  {
+    _id: ObjectId('68e72b8e771f57bccf5daf3c'),
+    item: 'ballpointpen',
+    qty: 100,
+    category: 'writingstuff'
+  },
+  {
+    _id: ObjectId('68e72b8e771f57bccf5daf3d'),
+    item: 'inkpen',
+    qty: 60,
+    category: 'writingstuff'
+  }
+]
+
+e_shopping> db.collegeshop.updateMany(
+  { category: "writingstuff" },
+  { $set: { status: "available" } }
+)
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 2,
+  modifiedCount: 2,
+  upsertedCount: 0
+}
+
+e_shopping> db.collegeshop.find()
+[
+  { _id: ObjectId('68e72b45771f57bccf5daf3b'), item: 'notebook', qty: 50, category: 'paperstuff' },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3c'), item: 'ballpointpen', qty: 100, category: 'writingstuff', status: 'available' },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3d'), item: 'inkpen', qty: 60, category: 'writingstuff', status: 'available' }
+]
+
+
+Step 7: Replace Entire Document Using replaceOne()
+e_shopping> db.collegeshop.replaceOne(
+  { item: "inkpen" },
+  { item: "blueinkpen", qty: 70, category: "writingstuff", status: "available" }
+)
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+Viewing Replaced Document Data
+e_shopping> db.collegeshop.find()
+[
+  { _id: ObjectId('68e72b45771f57bccf5daf3b'), item: 'notebook', qty: 50, category: 'paperstuff' },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3c'), item: 'ballpointpen', qty: 100, category: 'writingstuff', status: 'available' },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3d'), item: 'blueinkpen', qty: 70, category: 'writingstuff', status: 'available' }
+]
+
+e_shopping> db.collegeshop.insertOne({ item: "colourbox", qty: 55, category: "writingstuff", status: "available" })
+{
+  acknowledged: true,
+  insertedId: ObjectId('68e74dff771f57bccf5daf3e')
+}
+
+
+Deleting Documents: deleteOne() & deleteMany()
+e_shopping> db.collegeshop.find()
+[
+  { _id: ObjectId('68e72b8e771f57bccf5daf3c'), item: 'ballpointpen', qty: 100, category: 'writingstuff', status: 'available' },
+  { _id: ObjectId('68e72b8e771f57bccf5daf3d'), item: 'blueinkpen', qty: 70, category: 'writingstuff', status: 'available' },
+  { _id: ObjectId('68e74dff771f57bccf5daf3e'), item: 'colourbox', qty: 55, category: 'writingstuff', status: 'available' }
+]
+
+// Delete single document
+e_shopping> db.collegeshop.deleteOne({ item: "colourbox" })
+{ acknowledged: true, deletedCount: 1 }
+
+// Delete multiple matching documents
+e_shopping> db.collegeshop.deleteMany({ category: "writingstuff" })
+{ acknowledged: true, deletedCount: 2 }
+
+e_shopping> db.collegeshop.find()
+[ ]
+

@@ -1,0 +1,97 @@
+mysql> create table customer (c_id int primary key, c_name varchar(10), email varchar(25), phonenumber varchar(10));
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> insert into customer values (1071, 'sethu', 'sethu@gmail.com', '7634529800');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into customer values (1072, 'mani', 'mani@gmail.com', '9843978876'), (1073, 'jancy', 'jancy15@gmail.com', '9342156567');
+Query OK, 2 rows affected (0.02 sec)
+
+mysql> select * from customer;
++------+--------+-------------------+-------------+
+| c_id | c_name | email             | phonenumber |
++------+--------+-------------------+-------------+
+| 1071 | sethu  | sethu@gmail.com   | 7634529800  |
+| 1072 | mani   | mani@gmail.com    | 9843978876  |
+| 1073 | jancy  | jancy15@gmail.com | 9342156567  |
++------+--------+-------------------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> desc customer;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| c_id        | int         | NO   | PRI | NULL    |       |
+| c_name      | varchar(10) | YES  |     | NULL    |       |
+| email       | varchar(25) | YES  |     | NULL    |       |
+| phonenumber | varchar(10) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+Table 2: Vehicle Table & ENUM Constraint
+mysql> create table vehicle(vid int primary key, v_type enum('car', 'van', 'bus'), capacity int);
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> insert into vehicle values (1001, 'car', 4);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into vehicle values (1200, 'van', 10);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into vehicle values (1201, 'bus', 52);
+Query OK, 1 row affected (0.01 sec)
+
+
+Viewing Vehicle Table Data
+mysql> select * from vehicle;
++------+--------+----------+
+| vid  | v_type | capacity |
++------+--------+----------+
+| 1001 | car    |        4 |
+| 1200 | van    |       10 |
+| 1201 | bus    |       52 |
++------+--------+----------+
+3 rows in set (0.00 sec)
+Table 3: Reserve Table with CHECK Constraint
+mysql> create table reserve(
+    r_id int primary key, 
+    c_id int, 
+    vid int, 
+    start_datetime datetime check(start_datetime >= '2025-10-25'), 
+    end_datetime datetime, 
+    place varchar(15), 
+    foreign key(c_id) references customer(c_id), 
+    foreign key(vid) references vehicle(vid)
+);
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> desc reserve;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| r_id           | int         | NO   | PRI | NULL    |       |
+| c_id           | int         | YES  | MUL | NULL    |       |
+| vid            | int         | YES  | MUL | NULL    |       |
+| start_datetime | datetime    | YES  |     | NULL    |       |
+| end_datetime   | datetime    | YES  |     | NULL    |       |
+| place          | varchar(15) | YES  |     | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+Inserting Data & Check Constraint Validation
+mysql> insert into reserve values (1, 1071, 1200, '2025-10-26 06:00:00', '2025-10-26 09:00:00', 'salem');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into reserve values (2, 1073, 1201, '2025-10-25 10:30:00', '2025-10-27 06:00:00', 'delhi');
+Query OK, 1 row affected (0.02 sec)
+Check Constraint Violation Trigger
+mysql> insert into reserve values (3, 1072, 1200, '2025-10-20 10:00:00', '2025-10-25 08:00:00', 'madurai');
+ERROR 3819 (HY000): Check constraint 'reserve_chk_1' is violated.
+
+mysql> select * from reserve;
++------+------+------+---------------------+---------------------+-------+
+| r_id | c_id | vid  | start_datetime      | end_datetime        | place |
++------+------+------+---------------------+---------------------+-------+
+|    1 | 1071 | 1200 | 2025-10-26 06:00:00 | 2025-10-26 09:00:00 | salem |
+|    2 | 1073 | 1201 | 2025-10-25 10:30:00 | 2025-10-27 06:00:00 | delhi |
++------+------+------+---------------------+---------------------+-------+
+2 rows in set (0.00 sec)
